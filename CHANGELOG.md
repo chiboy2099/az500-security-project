@@ -114,6 +114,84 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.0] - 2026-03-16
+
+### Phase 2: Network Foundation - COMPLETE
+
+#### Added - Virtual Network Architecture
+- Created Virtual Network `az500-security-dev-vnet` with address space `10.0.0.0/16`
+- Created `app-subnet` (10.0.1.0/24) for application tier resources (App Service, Azure Functions)
+- Created `data-subnet` (10.0.2.0/24) for data tier resources (SQL Database, Storage Account, Key Vault via private endpoints)
+- Implemented network segmentation to separate trust zones and limit blast radius
+
+#### Added - Network Security Groups (NSGs)
+- Created `az500-security-dev-app-nsg` for application tier traffic control
+- Created `az500-security-dev-data-nsg` for data tier traffic control
+- Associated app-nsg with app-subnet (enforces all rules on subnet traffic)
+- Associated data-nsg with data-subnet (enforces all rules on subnet traffic)
+
+#### Added - NSG Security Rules (App Tier)
+- **Priority 100:** Allow-HTTPS-Inbound (Internet → App subnet, port 443) - enables user access to web application
+- **Priority 110:** Allow-HTTP-Inbound (Internet → App subnet, port 80) - enables HTTP to HTTPS redirect
+- **Priority 200:** Allow-SQL-Outbound (App subnet → Data subnet, port 1433) - enables application database queries
+- **Priority 210:** Allow-HTTPS-Outbound (App subnet → Data subnet, port 443) - enables Key Vault and Storage access
+
+#### Added - NSG Security Rules (Data Tier)
+- **Priority 100:** Allow-SQL-From-App (App subnet → Data subnet, port 1433) - permits application tier database access
+- **Priority 110:** Allow-HTTPS-From-App (App subnet → Data subnet, port 443) - permits application tier Key Vault/Storage access
+- **Priority 4000:** Deny-Internet-Inbound (Internet → Data subnet, all ports) - blocks all public internet access to data tier
+
+#### Security Controls Implemented
+- **Network segmentation:** Application and data tiers isolated into separate subnets
+- **Zero-trust networking:** Default-deny posture with explicit allow rules for required traffic only
+- **Defense-in-depth:** NSG rules provide network-layer security independent of future identity-based controls
+- **Least-privilege traffic flows:** Only specific source/destination/port combinations allowed
+- **Public exposure minimization:** Data tier completely blocked from internet access
+- **Micro-segmentation:** Inter-subnet traffic requires explicit allow rules
+
+#### Infrastructure as Code
+- All network resources defined in Terraform (network.tf, nsg.tf)
+- 14 resources deployed via `terraform apply` (1 VNet, 2 subnets, 2 NSGs, 7 NSG rules, 2 subnet-NSG associations)
+- Configuration is version-controlled, repeatable, and portable
+- Infrastructure changes tracked in Git with full audit trail
+
+#### AZ-500 Domain Coverage
+- ✅ **Domain 2 (Secure Networking):** 20-25% - Network segmentation, NSGs, traffic control, private vs public exposure
+
+#### Validation
+- ✅ All 14 resources created successfully via Terraform
+- ✅ VNet address space confirmed as 10.0.0.0/16 in Azure Portal
+- ✅ Both subnets visible with correct address prefixes (10.0.1.0/24, 10.0.2.0/24)
+- ✅ NSG associations verified (app-nsg → app-subnet, data-nsg → data-subnet)
+- ✅ Security rules present with correct priorities and actions
+- ✅ Deny-Internet-Inbound rule confirmed blocking public access to data tier
+
+#### Threat Mitigation
+- **Direct database attacks from internet:** Blocked by Priority 4000 Deny-Internet-Inbound rule on data-subnet
+- **Lateral movement after app tier compromise:** Limited by NSG rules requiring specific source subnets
+- **Unauthorized data exfiltration:** Controlled by outbound rules limiting destination subnets and ports
+- **Port scanning of data tier:** Blocked by default-deny posture and explicit internet denial
+- **Blast radius containment:** Compromise of app tier cannot directly access data tier without going through NSG-controlled paths
+
+#### Security Architecture Decisions
+- **Two-tier segmentation chosen** over flat network to implement defense-in-depth and limit lateral movement
+- **Private endpoints planned** for data tier (Phase 4) - current NSG rules prepare for private-only data access
+- **Priority gaps maintained** (100, 110, 200, 210, 4000) to allow future rule insertion without renumbering
+- **Explicit deny at priority 4000** rather than relying on Azure's default 65000 deny - makes security intent visible
+
+#### Infrastructure State
+- Virtual Network: 1 (az500-security-dev-vnet)
+- Subnets: 2 (app-subnet, data-subnet)
+- Network Security Groups: 2 (app-nsg, data-nsg)
+- NSG Rules: 7 total (4 app tier, 3 data tier)
+- Subnet-NSG Associations: 2
+
+#### Cost Impact
+- **Current monthly cost:** $0 (VNets, subnets, and NSGs are free in Azure)
+- **Future cost considerations:** Application Gateway + WAF (Phase 3) will be the primary network cost driver
+
+---
+
 ## Template for Future Entries
 
 ### [Version] - YYYY-MM-DD

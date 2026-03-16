@@ -153,11 +153,12 @@ az group delete --name az500-security-tfstate-rg --yes
 - [x] Permanent Owner assignment removed
 - [x] MFA + justification required for privilege escalation
 
-**Phase 2: Network Foundation** - 🚧 IN PROGRESS
-- [ ] VNet and subnet architecture
-- [ ] Network Security Groups (NSGs)
-- [ ] Application Gateway with WAF
-- [ ] Private DNS zones
+**Phase 2: Network Foundation** - ✅ COMPLETE
+- [x] Virtual Network and subnet architecture
+- [x] Network Security Groups (NSGs)
+- [x] NSG security rules (default-deny, least-privilege)
+- [x] Subnet-NSG associations
+- [x] Network segmentation (app tier, data tier)
 
 **Phase 3-7:** See [CHANGELOG.md](./CHANGELOG.md) for detailed progress
 
