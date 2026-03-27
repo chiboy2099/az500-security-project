@@ -160,7 +160,15 @@ az group delete --name az500-security-tfstate-rg --yes
 - [x] Subnet-NSG associations
 - [x] Network segmentation (app tier, data tier)
 
-**Phase 3-7:** See [CHANGELOG.md](./CHANGELOG.md) for detailed progress
+**Phase 3: Core Infrastructure** - ✅ COMPLETE
+- [x] App Service Plan (B1 tier, Linux)
+- [x] App Service with managed identity
+- [x] Function App with managed identity
+- [x] Storage Account for Functions backend
+- [x] VNet integration (App Service → app-subnet)
+- [x] Subnet delegation (Microsoft.Web/serverFarms)
+
+**Phase 4-7:** See [CHANGELOG.md](./CHANGELOG.md) for detailed progress
 
 ---
 
