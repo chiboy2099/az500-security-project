@@ -77,3 +77,10 @@ resource "random_string" "storage_suffix" {
   special = false
   upper   = false
 }
+
+# VNet Integration for App Service
+# Connects App Service to app-subnet, enabling access to private resources
+resource "azurerm_app_service_virtual_network_swift_connection" "app_vnet_integration" {
+  app_service_id = azurerm_linux_web_app.main.id
+  subnet_id      = azurerm_subnet.app_subnet.id
+}
