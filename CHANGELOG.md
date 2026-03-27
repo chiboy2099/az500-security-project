@@ -189,6 +189,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Future cost considerations:** Application Gateway + WAF (Phase 3) will be the primary network cost driver
 
 ---
+## [0.4.0] - 2026-03-26
+
+### Phase 3: VNet Integration & Network Security
+
+### Added
+- VNet integration for App Service (connects to app-subnet via swift connection)
+- Subnet delegation for Microsoft.Web/serverFarms on app-subnet
+- App Service now sources traffic from 10.0.1.0/24 IP range
+- Function App with managed identity for passwordless authentication
+
+### Changed
+- App Service can now reach private IP addresses within VNet
+- App-subnet configured to allow Web App integration
+
+### Security Impact
+- App Service traffic now flows through NSG security controls (app-nsg outbound rules apply)
+- Prepared infrastructure for private endpoint connectivity (Phase 4)
+- Network path validated: App Service → app-nsg (Allow-SQL-Outbound) → data-nsg (Allow-SQL-From-App) → future private data services
+
+### Lessons Learned
+- Subnet delegation required for VNet integration with App Services
+- Terraform state management: handled orphaned resource from failed creation
+- VNet integration provides outbound private IP access WITHOUT blocking public inbound access
+- Network securit
+
+----
 
 ## Template for Future Entries
 
