@@ -31,6 +31,12 @@ resource "azurerm_linux_web_app" "main" {
     type = "SystemAssigned" # This creates the managed identity!
   }
 
+   lifecycle {
+    ignore_changes = [
+      virtual_network_subnet_id
+    ]
+  }
+
   tags = var.tags
 }
 
@@ -61,7 +67,7 @@ resource "azurerm_linux_function_app" "main" {
 # Storage Account for Functions (required)
 # Azure Functions needs storage for internal operations
 resource "azurerm_storage_account" "functions" {
-  name = "az500func${random_string.storage_suffix.result}"
+  name                     = "az500func${random_string.storage_suffix.result}"
   location                 = var.location
   resource_group_name      = azurerm_resource_group.main.name
   account_tier             = "Standard"
