@@ -214,29 +214,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - VNet integration provides outbound private IP access WITHOUT blocking public inbound access
 - Network securit
 
-## [2026-03-31] - Phase 4: Data Layer Security (IN PROGRESS)
+## [2026-03-31] - Phase 4: Data Layer Security DEPLOYED ✅
 
-### Added
-- data.tf with SQL Server and Database configuration
-- Private endpoint for SQL Server (targets data-subnet)
-- Private DNS zone for SQL Server name resolution (privatelink.database.windows.net)
-- Random password generation for SQL admin emergency access
-- Lifecycle ignore_changes for App Service VNet integration property
+### Completed
+- Successfully migrated infrastructure from East US to Central US
+- SQL Server deployed with private endpoint (public access disabled)
+- SQL Database: Basic tier, 2GB, TDE enabled
+- Private DNS zone for SQL Server name resolution
+- VNet integration for App Service maintained
+- All 26 resources deployed successfully in Central US
 
-### Blocked
-- SQL Server deployment failed: Regional provisioning restriction in East US
-- Support ticket submitted to Microsoft for SQL Server quota in East US
-- Awaiting approval (1-2 business days expected)
+### Migration Notes
+- East US had SQL Server provisioning restrictions
+- Full infrastructure recreated in Central US
+- SQL Server deployment took 1h+ (Azure capacity issues)
+- Clean Terraform state after migration
 
-### Configuration Details
-- SQL Server: az500-security-dev-sql (Basic tier)
-- Public access: Disabled (private endpoint only)
-- TLS: Minimum 1.2
-- Database: az500-security-dev-db (Basic, 2GB)
-
-### Next Steps (After Approval)
-- Complete SQL Server deployment
-- Configure managed identity RBAC for App Service → SQL Database
+### Next Steps
+- Configure managed identity RBAC (App Service → SQL Database)
 - Test passwordless authentication
 - Add Key Vault with private endpoint
 ----
