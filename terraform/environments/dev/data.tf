@@ -1,5 +1,8 @@
 # Random password for SQL Server admin (emergency access only)
 # In production, this would be in Key Vault with break-glass access
+# Get current Azure context
+data "azurerm_client_config" "current" {}
+
 resource "random_password" "sql_admin_password" {
   length  = 32
   special = true
@@ -14,9 +17,12 @@ resource "azurerm_mssql_server" "main" {
   administrator_login          = "sqladmin"
   administrator_login_password = random_password.sql_admin_password.result
   minimum_tls_version          = "1.2"
-  
-  # Disable public network access - private endpoint only
   public_network_access_enabled = false
+
+  azuread_administrator {
+    login_username = "AzureAD Admin"
+    object_id      = data.azurerm_client_config.current.object_id
+  }
 
   tags = var.tags
 }
