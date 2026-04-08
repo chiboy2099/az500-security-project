@@ -213,6 +213,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Terraform state management: handled orphaned resource from failed creation
 - VNet integration provides outbound private IP access WITHOUT blocking public inbound access
 - Network securit
+------
 
 ## [2026-03-31] - Phase 4: Data Layer Security DEPLOYED ✅
 
@@ -236,6 +237,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add Key Vault with private endpoint
 ----
 
+## [2026-04-04] - Phase 4: Data Layer Security - Passwordless Authentication
+
+### Added
+- Azure AD administrator configuration on SQL Server
+- Managed identity database user for App Service (`az500-security-dev-app`)
+- Database permissions: `db_datareader` and `db_datawriter` for managed identity
+- Data source `azurerm_client_config` to retrieve current Azure AD context
+
+### Security Improvements
+- **Passwordless Authentication**: App Service → SQL Database connection now uses managed identity (zero secrets in code or configuration)
+- **Three Pillars Complete**:
+  1. Identity: App Service system-assigned managed identity
+  2. Authorization: Database user with explicit role assignments
+  3. Runtime: Azure AD token-based authentication
+- **Private-only Access**: SQL Database accessible only via private endpoint (public access disabled)
+
+### Temporary Bootstrap Access (Removed)
+- Temporarily enabled `public_network_access_enabled = true` on SQL Server for initial managed identity user creation
+- Temporarily added firewall rule for Cloud Shell IP (4.151.247.225)
+- **All bootstrap access removed after setup** - SQL Server returned to private-only access
+
+### Learning Highlights
+- Distinguished three security layers: Authentication, Authorization, Network Access Control
+- Bootstrap access patterns for initial configuration in private environments
+- Azure Portal Query Editor for Azure AD authenticated SQL access
+- Cloud Shell network isolation (not in customer VNet by default)
+
+### Infrastructure State
+- 27 resources deployed in Central US
+- Phase 4: 100% complete
+- Next: Phase 5 (Defender for Cloud + Sentinel)
+------
 ## Template for Future Entries
 
 ### [Version] - YYYY-MM-DD
